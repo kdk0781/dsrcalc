@@ -1,0 +1,328 @@
+/* =============================================================================
+   css/report.css — DSR 진단 리포트 전용 스타일
+   · report.html 의 <style> 블록을 외부 파일로 분리
+   · body.white / body.dark 클래스 기반 (common.css 충돌 방지)
+   ============================================================================= */
+
+/* ── 라이트 테마 ───────────────────────────────────────────────────────────── */
+body.white, body:not(.dark) {
+  --rp-bg: #f0f2f8; --rp-surface: #fff; --rp-surface-2: #eef0f7;
+  --rp-border: #dde1ed; --rp-text: #111827; --rp-text-sub: #374151;
+  --rp-text-muted: #6b7280; --rp-shadow: 0 2px 16px rgba(0,0,0,.08);
+}
+/* ── 다크 테마 ─────────────────────────────────────────────────────────────── */
+body.dark {
+  --rp-bg: #0d1117; --rp-surface: #161b22; --rp-surface-2: #1f2937;
+  --rp-border: #2d3748; --rp-text: #f1f5f9; --rp-text-sub: #94a3b8;
+  --rp-text-muted: #64748b; --rp-shadow: 0 2px 16px rgba(0,0,0,.4);
+}
+/* ── 고정 브랜드 색상 (테마 무관) ─────────────────────────────────────────── */
+:root {
+  --rp-yellow: #FFB800; --rp-yellow-deep: #e5a200;
+  --rp-danger: #dc2626; --rp-warn: #d97706; --rp-safe: #16a34a;
+  --rp-radius: 18px; --rp-radius-sm: 12px;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  margin: 0; padding: 0; background: var(--rp-bg); color: var(--rp-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.rp-wrap { max-width: 560px; margin: 0 auto; padding: 16px 14px 72px; }
+
+/* ── 헤더 ─────────────────────────────────────────────────────────────────── */
+.rp-header {
+  background: linear-gradient(135deg, #0d1929 0%, #1a3568 100%);
+  border-radius: var(--rp-radius); padding: 24px 20px 22px;
+  margin-bottom: 12px; position: relative; overflow: hidden;
+}
+.rp-header-glow {
+  position: absolute; right: 16px; top: 16px; width: 80px; height: 80px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(255,184,0,.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+.rp-logo  { font-size: 10.5px; font-weight: 700; color: var(--rp-yellow); letter-spacing: .1em; margin-bottom: 6px; position: relative; z-index: 1; }
+.rp-title { font-size: 22px; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 6px; position: relative; z-index: 1; }
+.rp-meta  { font-size: 11px; color: rgba(255,255,255,.5); margin-bottom: 14px; position: relative; z-index: 1; }
+
+/* ── 카운트다운 뱃지 ─────────────────────────────────────────────────────── */
+.rp-countdown-wrap {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: rgba(255,184,0,.13); border: 1px solid rgba(255,184,0,.4);
+  border-radius: 12px; padding: 10px 16px; position: relative; z-index: 1;
+}
+.rp-countdown-segments { display: flex; align-items: baseline; gap: 4px; }
+.cd-block { display: flex; flex-direction: column; align-items: center; min-width: 36px; }
+.cd-num   { font-size: 28px; font-weight: 900; color: var(--rp-yellow); line-height: 1; font-variant-numeric: tabular-nums; }
+.cd-unit  { font-size: 9px; font-weight: 700; color: rgba(255,255,255,.45); letter-spacing: .06em; margin-top: 1px; }
+.cd-sep   { font-size: 22px; font-weight: 900; color: rgba(255,184,0,.45); line-height: 1; padding-bottom: 4px; }
+.rp-countdown-right { border-left: 1px solid rgba(255,184,0,.25); padding-left: 12px; display: flex; flex-direction: column; gap: 2px; }
+.rp-countdown-right .cd-tag  { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.45); letter-spacing: .07em; }
+.rp-countdown-right .cd-date { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.8); }
+
+/* ── 공통 카드 ────────────────────────────────────────────────────────────── */
+.rp-card {
+  background: var(--rp-surface); border: 1.5px solid var(--rp-border);
+  border-radius: var(--rp-radius); padding: 18px 16px; margin-bottom: 12px;
+  box-shadow: var(--rp-shadow); position: relative; overflow: hidden;
+}
+.rp-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rp-yellow), var(--rp-yellow-deep)); }
+.rp-card-title { font-size: 11px; font-weight: 700; letter-spacing: .07em; color: var(--rp-text-muted); text-transform: uppercase; margin-bottom: 14px; }
+
+/* ── 상담사 워터마크 배너 ────────────────────────────────────────────────── */
+.consultant-banner {
+  border-radius: var(--rp-radius); margin-bottom: 12px;
+  background: linear-gradient(135deg, #0d1929 0%, #1e3a6e 100%);
+  padding: 16px 18px; position: relative; overflow: hidden;
+}
+.consultant-banner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rp-yellow), var(--rp-yellow-deep)); }
+.consultant-banner::after  { content: ''; position: absolute; right: -10px; top: -10px; width: 70px; height: 70px; border-radius: 50%; background: radial-gradient(circle, rgba(255,184,0,.15) 0%, transparent 70%); pointer-events: none; }
+.consultant-inner  { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; }
+.consultant-avatar { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--rp-yellow), var(--rp-yellow-deep)); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 2px 8px rgba(255,184,0,.3); }
+.consultant-body  { flex: 1; min-width: 0; }
+.consultant-tag   { font-size: 10px; font-weight: 700; color: var(--rp-yellow); letter-spacing: .08em; margin-bottom: 3px; }
+.consultant-phone { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: .03em; margin-bottom: 4px; word-break: break-all; }
+.consultant-msg   { font-size: 12px; color: rgba(255,255,255,.7); line-height: 1.5; word-break: keep-all; }
+
+/* ── DSR 종합 ─────────────────────────────────────────────────────────────── */
+.dsr-big   { font-size: 52px; font-weight: 900; line-height: 1; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+.dsr-label { font-size: 12px; color: var(--rp-text-sub); margin-bottom: 14px; }
+.dsr-bar-track { height: 10px; background: var(--rp-surface-2); border-radius: 99px; overflow: hidden; margin-bottom: 8px; position: relative; }
+.dsr-bar-track::after { content: ''; position: absolute; left: 40%; top: 0; bottom: 0; width: 2px; background: rgba(150,150,150,.35); z-index: 2; }
+.dsr-bar-fill  { height: 100%; border-radius: 99px; width: 0; transition: width .9s cubic-bezier(.22,1,.36,1); }
+.dsr-legend    { display: flex; justify-content: space-between; font-size: 11px; color: var(--rp-text-muted); }
+
+/* ── 요약 그리드 ──────────────────────────────────────────────────────────── */
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.summary-item { background: var(--rp-surface-2); border-radius: var(--rp-radius-sm); padding: 12px 12px 11px; }
+.summary-item.full { grid-column: 1 / -1; }
+.summary-item-label { font-size: 10.5px; color: var(--rp-text-muted); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.summary-item-value { font-size: 14px; font-weight: 800; color: var(--rp-text); word-break: break-all; overflow-wrap: anywhere; line-height: 1.3; }
+@media (max-width: 360px) { .summary-item-value { font-size: 12.5px; } }
+
+/* ── 개별 부채 DSR 기여도 ─────────────────────────────────────────────────── */
+.loan-item { padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--rp-border); }
+.loan-item:last-child { padding-bottom: 0; margin-bottom: 0; border-bottom: none; }
+.loan-item-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.loan-item-name   { display: flex; align-items: center; gap: 5px; font-size: 13.5px; font-weight: 700; color: var(--rp-text); flex: 1; min-width: 0; }
+.loan-item-name span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.loan-item-pct  { font-size: 15px; font-weight: 900; flex-shrink: 0; }
+.loan-bar-track { height: 7px; background: var(--rp-surface-2); border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+.loan-bar-fill  { height: 100%; border-radius: 99px; width: 0; transition: width .8s cubic-bezier(.22,1,.36,1); }
+.loan-item-meta { display: flex; flex-direction: column; gap: 4px; }
+.loan-meta-row  { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.loan-meta-chip { background: var(--rp-surface-2); border-radius: 6px; padding: 2px 7px; font-size: 11px; font-weight: 600; color: var(--rp-text-sub); white-space: nowrap; border: 1px solid var(--rp-border); }
+.loan-meta-drop { font-size: 11.5px; font-weight: 700; }
+.rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; font-size: 10px; font-weight: 900; }
+.rank-1 { background: #dc2626; color: #fff; } .rank-2 { background: #d97706; color: #fff; }
+.rank-3 { background: #ca8a04; color: #fff; } .rank-n { background: var(--rp-surface-2); color: var(--rp-text-muted); border: 1px solid var(--rp-border); }
+
+/* ── 역행 산출 카드 ──────────────────────────────────────────────────────── */
+.reverse-card { border-color: rgba(220,38,38,.5) !important; }
+.reverse-card::before { background: linear-gradient(90deg, #dc2626, #f87171) !important; }
+.reverse-card .rp-card-title { color: #dc2626 !important; }
+.scenario-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.scenario-tab  { flex: 1; border-radius: 10px; padding: 9px 6px; font-size: 12px; font-weight: 700; text-align: center; border: 1.5px solid; }
+.tab-income { background: rgba(255,184,0,.12); color: #7a5200; border-color: rgba(255,184,0,.5); }
+.tab-repay  { background: rgba(220,38,38,.08); color: #dc2626; border-color: rgba(220,38,38,.4); }
+body.dark .tab-income { color: var(--rp-yellow); }
+body.dark .tab-repay  { color: #f87171; border-color: rgba(248,113,113,.45); background: rgba(220,38,38,.12); }
+.rs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.rs-item { background: var(--rp-surface-2); border-radius: var(--rp-radius-sm); padding: 13px 12px; text-align: center; }
+.rs-item.full { grid-column: 1 / -1; }
+.rs-item.hl   { background: rgba(255,184,0,.1); border: 1.5px solid rgba(255,184,0,.4); }
+.rs-label { font-size: 10.5px; color: var(--rp-text-muted); margin-bottom: 5px; line-height: 1.3; }
+.rs-value { font-size: 17px; font-weight: 900; color: var(--rp-text); word-break: break-all; line-height: 1.2; }
+.rs-value.c-income { color: #7a5200; } body.dark .rs-value.c-income { color: var(--rp-yellow); }
+.rs-value.c-danger { color: #dc2626; } body.dark .rs-value.c-danger { color: #f87171; }
+@media (max-width: 360px) { .rs-value { font-size: 14px; } }
+.rs-tip { background: var(--rp-surface-2); border-radius: var(--rp-radius-sm); padding: 13px 14px; font-size: 12.5px; line-height: 1.75; color: var(--rp-text-sub); }
+.rs-tip b { color: var(--rp-text); }
+
+/* ── 종합 진단 ────────────────────────────────────────────────────────────── */
+.stable-card { border-color: rgba(22,163,74,.5) !important; }
+.stable-card::before { background: linear-gradient(90deg, #16a34a, #4ade80) !important; }
+.rec-box   { background: var(--rp-surface-2); border-radius: var(--rp-radius-sm); padding: 15px 14px; font-size: 13.5px; line-height: 1.8; color: var(--rp-text); }
+.rec-head  { font-size: 14px; font-weight: 800; margin-bottom: 10px; display: block; }
+.rec-row   { display: flex; align-items: baseline; gap: 5px; margin-bottom: 6px; flex-wrap: wrap; }
+.rec-dot   { flex-shrink: 0; color: var(--rp-text-muted); }
+.rec-amount { font-size: 15px; font-weight: 900; background: rgba(255,184,0,.15); padding: 1px 7px; border-radius: 6px; color: #7a5200; word-break: break-all; }
+body.dark .rec-amount { color: var(--rp-yellow); background: rgba(255,184,0,.12); }
+.rec-label { font-size: 13px; color: var(--rp-text-sub); }
+
+/* ── 에러 / 푸터 ──────────────────────────────────────────────────────────── */
+.rp-error       { text-align: center; padding: 64px 24px; }
+.rp-error-icon  { font-size: 56px; margin-bottom: 16px; }
+.rp-error-title { font-size: 20px; font-weight: 800; color: var(--rp-text); margin-bottom: 8px; }
+.rp-error-desc  { font-size: 14px; color: var(--rp-text-sub); line-height: 1.65; }
+.rp-footer      { text-align: center; font-size: 11px; color: var(--rp-text-muted); line-height: 1.7; margin-top: 24px; padding: 0 8px; }
+
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   부채 상세 내역 섹션 (.ld-*)  v2
+   · 전회차 상환 스케줄 + 탭 전환 (원금균등 ↔ 원리금균등)
+   · 이미지 스크린샷 기준 디자인
+══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 부채 항목 래퍼 ──────────────────────────────────────────────────────── */
+.ld-item {
+  padding: 16px 0; border-bottom: 1px solid var(--rp-border);
+}
+.ld-item:first-child { padding-top: 0; }
+.ld-item:last-child  { padding-bottom: 0; border-bottom: none; }
+
+/* ── 헤더 ────────────────────────────────────────────────────────────────── */
+.ld-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin-bottom: 8px;
+}
+.ld-name {
+  font-size: 14px; font-weight: 800; color: var(--rp-text);
+  flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ld-term-badge {
+  font-size: 10.5px; font-weight: 700; color: var(--rp-text-muted);
+  background: var(--rp-surface-2); border: 1px solid var(--rp-border);
+  border-radius: 6px; padding: 2px 8px; flex-shrink: 0;
+}
+
+/* ── 메타 칩 ─────────────────────────────────────────────────────────────── */
+.ld-meta-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.ld-chip {
+  font-size: 11px; font-weight: 600; color: var(--rp-text-sub);
+  background: var(--rp-surface-2); border: 1px solid var(--rp-border);
+  border-radius: 6px; padding: 2px 8px; white-space: nowrap;
+}
+
+/* ── 월 납입액 그리드 ────────────────────────────────────────────────────── */
+.ld-payment-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;
+}
+.ld-payment-item {
+  background: var(--rp-surface-2); border-radius: var(--rp-radius-sm);
+  padding: 11px 12px; text-align: center;
+}
+.ld-payment-item--alt {
+  background: rgba(255,184,0,.08); border: 1.5px solid rgba(255,184,0,.3);
+}
+body.dark .ld-payment-item--alt { background: rgba(255,184,0,.06); }
+
+.ld-payment-label {
+  font-size: 10px; color: var(--rp-text-muted); margin-bottom: 5px; line-height: 1.4;
+}
+.ld-payment-sub {
+  font-size: 9.5px; font-weight: 700; letter-spacing: .04em;
+  background: var(--rp-border); border-radius: 4px; padding: 1px 5px;
+  display: inline-block; margin-top: 2px;
+}
+.ld-payment-item--alt .ld-payment-sub { background: rgba(255,184,0,.2); color: #7a5200; }
+body.dark .ld-payment-item--alt .ld-payment-sub { color: var(--rp-yellow); }
+.ld-payment-value {
+  font-size: 15px; font-weight: 900; color: var(--rp-text); word-break: break-all;
+}
+
+/* ── 스케줄 토글 버튼 ────────────────────────────────────────────────────── */
+.ld-sch-btn {
+  width: 100%; padding: 10px 14px; border-radius: 10px;
+  font-size: 12.5px; font-weight: 700; cursor: pointer;
+  background: var(--rp-surface-2); border: 1.5px solid var(--rp-border);
+  color: var(--rp-text-muted); transition: all .2s;
+  text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.ld-sch-btn:hover,
+.ld-sch-btn--open { background: var(--rp-yellow); border-color: var(--rp-yellow); color: #111; }
+
+/* ── 스케줄 래퍼 ─────────────────────────────────────────────────────────── */
+.ld-sch-wrap {
+  margin-top: 10px;
+  border: 1.5px solid var(--rp-border);
+  border-radius: var(--rp-radius-sm);
+  overflow: hidden;
+}
+
+/* ── 스케줄 헤더 (대출 정보 요약) ───────────────────────────────────────── */
+.ld-sch-header {
+  background: var(--rp-surface-2);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--rp-border);
+}
+.ld-sch-loan-info {
+  font-size: 11.5px; font-weight: 700;
+  color: var(--rp-text-sub);
+}
+
+/* ── 탭 행 ───────────────────────────────────────────────────────────────── */
+.ld-tab-row {
+  display: flex;
+  border-bottom: 1px solid var(--rp-border);
+  background: var(--rp-surface);
+}
+.ld-tab-btn {
+  flex: 1; padding: 11px 8px;
+  font-size: 12.5px; font-weight: 700; text-align: center;
+  border: none; cursor: pointer;
+  background: var(--rp-surface-2); color: var(--rp-text-muted);
+  border-bottom: 3px solid transparent;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.ld-tab-btn:first-child { border-right: 1px solid var(--rp-border); }
+.ld-tab-btn--active {
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  border-bottom-color: var(--rp-yellow);
+  font-weight: 800;
+}
+
+/* ── 스크롤 영역 ──────────────────────────────────────────────────────────── */
+.ld-sch-scroll {
+  max-height: 400px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+/* 스크롤바 스타일 */
+.ld-sch-scroll::-webkit-scrollbar { width: 4px; }
+.ld-sch-scroll::-webkit-scrollbar-track { background: transparent; }
+.ld-sch-scroll::-webkit-scrollbar-thumb { background: var(--rp-border); border-radius: 99px; }
+
+/* 로딩 */
+.ld-sch-loading {
+  text-align: center; padding: 28px; color: var(--rp-text-muted); font-size: 13px;
+}
+
+/* ── 스케줄 테이블 ───────────────────────────────────────────────────────── */
+.ld-sch-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; color: var(--rp-text-sub);
+}
+.ld-sch-table thead { position: sticky; top: 0; z-index: 2; }
+.ld-sch-table th {
+  background: var(--rp-surface-2); color: var(--rp-text-muted);
+  font-weight: 700; font-size: 10.5px; letter-spacing: .04em;
+  padding: 8px 10px; text-align: right;
+  border-bottom: 1.5px solid var(--rp-border);
+  white-space: nowrap;
+}
+.ld-sch-table td {
+  padding: 8px 10px; text-align: right;
+  border-bottom: 1px solid var(--rp-border);
+  font-size: 12px;
+}
+.ld-sch-table tr:last-child td { border-bottom: none; }
+.ld-sch-table tr:nth-child(even) td { background: var(--rp-surface-2); }
+.ld-sch-table tr:hover td { background: rgba(255,184,0,.06); }
+
+/* 회차 열 중앙 정렬 */
+.ld-td-center { text-align: center !important; color: var(--rp-text-muted); font-weight: 600; }
+/* 합계 열 강조 */
+.ld-td-total  { color: var(--rp-text) !important; }
+.ld-td-total b { font-weight: 900; }
+
+/* ── 소형 화면 ────────────────────────────────────────────────────────────── */
+@media (max-width: 360px) {
+  .ld-payment-value  { font-size: 13px; }
+  .ld-sch-table th,
+  .ld-sch-table td   { padding: 6px 6px; font-size: 11px; }
+  .ld-tab-btn        { font-size: 11.5px; }
+}

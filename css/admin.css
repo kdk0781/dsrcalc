@@ -1,0 +1,103 @@
+/* =============================================================================
+   DSR 계산기 — 관리자 페이지 전용 스타일 (admin.css)
+   ============================================================================= */
+
+/* ── 관리자 로그인 페이지 기본 ── */
+.admin-container {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 20px; background: var(--bg-page);
+}
+.admin-card {
+  background: var(--bg-surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius-xl); padding: 30px 24px;
+  width: 100%; max-width: 400px; box-shadow: var(--shadow-xl);
+  animation: fade-up 0.4s var(--ease) both;
+}
+.admin-header { text-align: center; margin-bottom: 24px; }
+.admin-header h2 { font-size: 20px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
+.admin-header p { font-size: 13px; color: var(--text-secondary); }
+
+.admin-input-group { margin-bottom: 16px; }
+.admin-input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-label); margin-bottom: 6px; }
+.admin-input-group input { 
+  width: 100%; height: 48px; padding: 0 14px; 
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm); 
+  background: var(--bg-input); color: var(--text-primary); 
+  font-size: 15px; outline: none; transition: border-color 0.2s; 
+}
+.admin-input-group input:focus { border-color: var(--kb-yellow); box-shadow: 0 0 0 3px rgba(255,184,28,0.15); }
+
+.btn-login { 
+  width: 100%; height: 50px; 
+  background: linear-gradient(135deg, var(--kb-navy) 0%, var(--kb-navy-mid) 100%); 
+  color: #fff; border-radius: var(--radius-md); font-size: 15px; font-weight: 800; 
+  margin-top: 10px; box-shadow: var(--shadow-md); transition: opacity 0.2s; 
+}
+.btn-login:hover { opacity: 0.9; }
+
+.admin-footer { margin-top: 20px; text-align: center; }
+.btn-text { font-size: 12px; color: var(--text-muted); text-decoration: underline; cursor: pointer; background: none; border: none; padding: 5px; }
+
+
+/* ── 관리자 전용 커스텀 모달 스타일 ── */
+.admin-modal-overlay {
+  display: none; /* JS에서 flex로 제어 */
+  z-index: 9999;
+}
+
+.settings-modal-content {
+  max-width: 360px;
+}
+
+.settings-modal-title {
+  text-align: center; 
+  font-weight: 800; 
+  font-size: 16px; 
+  margin-bottom: 16px;
+}
+
+.settings-section {
+  text-align: left; 
+  margin-bottom: 12px;
+}
+
+.settings-section-divider {
+  text-align: left; 
+  margin-bottom: 20px; 
+  border-top: 1px dashed var(--border); 
+  padding-top: 14px;
+}
+
+.settings-label {
+  font-size: 11px; 
+  font-weight: 700; 
+  color: var(--text-muted); 
+  margin-bottom: 4px; 
+  display: block;
+}
+
+/* 모달 내부 인풋 공통 */
+.modal-input {
+  width: 100%; height: 42px; padding: 0 12px;
+  background: var(--bg-input); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  font-size: 14px; outline: none; transition: border-color 0.2s;
+}
+.modal-input:focus { border-color: var(--kb-yellow); box-shadow: 0 0 0 3px rgba(255,184,28,0.15); }
+.modal-input.mt-6 { margin-top: 6px; }
+
+/* 모달 버튼 그룹 */
+.modal-btn-group {
+  display: flex; 
+  gap: 8px;
+}
+
+.modal-btn-cancel {
+  background: var(--bg-surface-3); 
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+.modal-btn-cancel:hover { 
+  background: var(--bg-surface-2); 
+  color: var(--text-primary); 
+}
