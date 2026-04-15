@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- report.html — DSR 진단 리포트 뷰어
+  · 인라인 스타일 → css/report.css 로 분리
+  · 인라인 JS    → js/report-page.js 로 분리
+  ★ 캐시 갱신: ?v= 값을 올려주세요 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>DSR 진단 리포트</title>
+<link rel="icon" type="image/png" href="../ico/favicon-light.png">
+<link rel="stylesheet" href="./css/common.css" media="all">
+<link rel="stylesheet" href="./css/report.css" media="all">
+</head>
+<body>
+
+<div class="rp-wrap" id="rpWrap">
+  <!-- js/report-page.js 가 렌더링 -->
+  <div class="rp-error">
+    <div class="rp-error-icon">⏳</div>
+    <p class="rp-error-title">리포트를 불러오는 중...</p>
+  </div>
+</div>
+
+<script src="./js/report-page.js?v=2603302022"></script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- ============================================================================
+  index.html — DSR 계산기 메인 페이지 (뼈대)  VER 2026.07
+  ─────────────────────────────────────────────────────────────────────────────
+  ★ 2026.07 변경사항 (금리 자동반영 안정화)
+    1. kb_rates.js 전면 개편
+       · TTL 30분 → 5분 (즉시성 ↑)
+       · 브레이스 카운팅 파서 (interest/script.js 구조 변경에 견고)
+       · 합리성 검증 (0.1~20% 범위 외 거부 → 자동 폴백)
+       · window._kbRatesMeta 노출 (디버깅 용이)
+    2. app.js: addLoan() 보다 먼저 금리 로드 → 첫 항목부터 정확한 표시
+    3. ui.js: 헤더에 LIVE/CACHE/FALLBACK 신선도 배지 추가 (클릭=새로고침)
+
+  ★ 캐시 갱신 절차
+    1) interest/script.js 금리값 수정
+    2) 아래 ?v= 값을 오늘 날짜로 변경 (예: 2604152030)
+    3) git push → GitHub Pages 배포
+
+  ★ 디버깅: 콘솔에서 window._kbRatesMeta 입력 시 마지막 적용 결과 확인
+============================================================================ -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131926" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="DSR계산기">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="DSR계산기">
+<meta name="description" content="KB DSR 계산기 — 스트레스금리 반영 DSR 진단 및 대출 한도 분석">
+<link rel="icon" type="image/svg+xml" href="favicon-light.svg" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/svg+xml" href="favicon-dark.svg" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" sizes="180x180" href="../ico/favicon-light.png">
+<link rel="icon" type="image/png" href="../ico/favicon-light.png">
+<link rel="manifest" href="app_main.json">
+<!-- 스타일시트 -->
+<link rel="stylesheet" href="./css/common.css?v=2604152030" media="all">
+<link rel="stylesheet" href="./css/modal.css?v=2604152030" media="all">
+<title>DSR 계산기</title>
+</head>
+<body>
+
+<!-- ── 단계별 로딩 오버레이 ──────────────────────────────────────────────── -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none;" aria-live="polite" role="status">
+	<div class="loading-spinner-wrap">
+		<div class="loading-emoji">📊</div>
+	</div>
+	<div class="loading-text">
+		로딩 중<span class="loading-dots">
+		<span>.</span><span>.</span><span>.</span>
+		</span>
+	</div>
+	<div class="loading-steps loading-steps-wrap">
+		<div class="loading-step" id="lstep1">
+			<span class="lstep-icon">⚙️</span>
+			<span class="lstep-label">서비스 워커 업데이트</span>
+		</div>
+		<div class="loading-step" id="lstep2">
+			<span class="lstep-icon">🗑️</span>
+			<span class="lstep-label">브라우저 캐시 삭제</span>
+		</div>
+		<div class="loading-step" id="lstep3">
+			<span class="lstep-icon">🔄</span>
+			<span class="lstep-label">최신 금리 불러오기</span>
+		</div>
+	</div>
+	<div class="loading-sub" id="loadingSub">잠시만 기다려 주세요.</div>
+</div>
+
+<!-- ── Partials 플레이스홀더 ─────────────────────────────────────────────── -->
+<div data-partial="partials/guide.html"></div>
+<div data-partial="partials/notice.html"></div>
+<div data-partial="partials/modals.html"></div>
+
+<!-- ── 메인 컨테이너 ─────────────────────────────────────────────────────── -->
+<div class="container">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="header-inner">
+      <h2>📊 DSR 계산기</h2>
+      <!-- ★ 금리 신선도 배지가 여기에 동적 삽입됨 (ui.js _renderRateBadge) -->
+      <button class="btn-guide" onclick="openGuide()" aria-label="사용 가이드 열기">
+        <span class="btn-guide-icon">❓</span>
+        <span class="btn-guide-text">사용 가이드</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 1. 연소득 -->
+  <div class="section-title">1. 연소득 정보</div>
+  <div class="input-card">
+    <label>연간 세전 소득 (원)</label>
+    <input type="text" id="income" inputmode="numeric" onkeyup="formatComma(this)" placeholder="예: 60,000,000">
+  </div>
+
+  <!-- 2. 부채 항목 -->
+  <div class="section-title">2. 부채 상세 설정</div>
+  <div id="loanList"></div>
+  <button class="btn-add-loan" onclick="addLoan()">+ 부채 항목 추가</button>
+  <button class="btn-calc" onclick="calculateTotalDSR()">DSR 분석 및 한도 확인</button>
+
+  <!-- 결과 영역 -->
+  <div id="resultArea" class="result-box" style="display:none;">
+    <div class="recommendation-box">
+      <h4 class="rec-box-title">🎯 KB 전문 DSR 진단</h4>
+      <p id="recDesc" class="rec-box-desc">분석 데이터 대기 중...</p>
+    </div>
+    <div class="dsr-result-header">
+      <label>종합 DSR 지수 (스트레스 반영)</label>
+      <div id="dsrVal" class="dsr-main-val">0%</div>
+      <div class="dsr-progress-container">
+        <div id="dsrBar" class="dsr-progress-bar"></div>
+        <div class="limit-marker"></div>
+        <div class="limit-label">DSR 규제선 (40%)</div>
+      </div>
+    </div>
+
+    <div class="section-title">방식별 최대 한도 분석</div>
+    <div class="max-grid">
+      <div class="max-item" id="prinCard">
+        <div class="rec-badge" id="prinBadge">DSR 한도 극대화 추천</div>
+        <label>원금균등 방식 최대 한도</label>
+        <div id="absMaxPrin" class="max-val">0원</div>
+      </div>
+      <div class="max-item" id="levelCard">
+        <div class="rec-badge" id="levelBadge">계획적 자금 운영 추천</div>
+        <label>원리금균등 방식 최대 한도</label>
+        <div id="absMaxLevel" class="max-val">0원</div>
+      </div>
+    </div>
+
+    <!-- 역행 계산기 -->
+    <button id="btnReverseCalc" class="btn-more-schedule btn-reverse-toggle" onclick="toggleReverseCalc()" style="display:none;">
+      💡 한도 초과 원인 및 해결책 보기 (역행 계산기)
+    </button>
+    <div id="reverseCalcSection" class="schedule-section-hidden">
+      <div class="reverse-calc-container">
+        <div class="reverse-title-wrap">
+          <span>📉</span>
+          <div class="reverse-title">개별 부채 DSR 기여도 및 상환 목표</div>
+        </div>
+        <div id="reverseLoanList" class="reverse-loan-list"></div>
+        <div class="reverse-solution-card">
+          <div class="solution-title"><span>🎯</span> 안정권(DSR 35%) 진입 솔루션</div>
+          <div id="reverseSolutionText" class="solution-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 상환 스케줄 -->
+    <button id="btnShowSchedule" class="btn-more-schedule" onclick="toggleSchedule()">
+      📊 전체 상환 스케줄 상세 보기
+    </button>
+    <div id="scheduleSection" class="schedule-section-hidden">
+      <div class="section-title">📅 회차별 상세 상환 스케줄</div>
+      <div class="schedule-wrapper">
+        <div class="schedule-tabs">
+          <button id="tabPrin"  class="tab-btn active" onclick="switchSchedule('P')">원금균등 방식</button>
+          <button id="tabLevel" class="tab-btn"        onclick="switchSchedule('L')">원리금균등 방식</button>
+        </div>
+        <div class="schedule-container">
+          <div class="schedule-header">
+            <div>회차</div><div>원금</div><div>이자</div><div>합계</div>
+          </div>
+          <div id="scheduleList" class="schedule-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 추가 가능 대출액 -->
+    <div class="limit-card">
+      <label class="limit-label-blue">현재 추가 가능 대출액</label>
+      <div id="remainingLimit" class="limit-val">0원</div>
+      <span class="limit-info-text">* 원금균등 방식 · 주담대 30년 기준 자동 산출</span>
+    </div>
+    <div class="result-disclaimer">
+      ⚠️ 본 결과는 입력값 기준 예상 수치이며, 실제 심사 결과와 상이할 수 있습니다.
+      금융 의사결정 전 반드시 담당 금융기관에 확인하시기 바랍니다.
+    </div>
+
+    <!-- 리포트 공유 버튼 -->
+    <button id="btnCopyReport" class="btn-copy" onclick="copyResultText()">
+      📋 DSR 진단 리포트 복사
+    </button>
+
+    <!-- 부동산 위키 부채 산정 가이드 -->
+    <div class="section-title">부동산 위키 부채 산정 가이드</div>
+    <div class="wiki-table-wrapper">
+      <table class="wiki-table">
+        <thead>
+          <tr><th>대출 종류</th><th>원금 산정 방식</th><th>비고</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>주택담보대출</b></td><td>실제 상환액 (총 기간 반영)</td><td>일시상환 시 가상 10년</td></tr>
+          <tr><td><b>오피스텔(비주거)</b></td><td>실제 상환액 또는 가상 8년</td><td>금융위 비주담대 가이드</td></tr>
+          <tr><td><b>전세 (만기일시)</b></td><td><span class="wiki-blue-text">원금 상환액 제외</span></td><td>연간 이자만 합산</td></tr>
+          <tr><td><b>신용대출</b></td><td>대출총액 / 5년 가상 분할</td><td>실제 만기 무관 고정</td></tr>
+          <tr><td><b>카드론 (장기)</b></td><td>대출총액 / 3년 가상 분할</td><td>DSR 강력 규제 대상</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- /resultArea -->
+
+  <!-- 관리자 링크 생성기 -->
+  <div id="adminShareContainer" class="admin-share-wrap" style="display:none;">
+    <div class="admin-share-header">
+      <div class="admin-header-left">
+        <span class="admin-badge">👑 관리자 전용</span>
+        <span class="admin-title">고객 배포용 링크 생성기</span>
+      </div>
+      <button class="btn-admin-logout" onclick="adminLogout()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        로그아웃
+      </button>
+    </div>
+    <button id="btnAdminShare" class="admin-share-btn" onclick="generateAdminShareLink()">
+      <div class="admin-share-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </div>
+      <div class="admin-share-text">
+        <span class="share-title-main">1회성 단축 링크 발급</span>
+        <span class="share-title-sub">앱 설치 유도 · 24시간 후 자동 만료</span>
+      </div>
+      <div class="admin-share-arrow">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+    </button>
+  </div>
+
+</div>
+<!-- /container -->
+
+<!-- FAB 새로고침 -->
+<div class="refresh-btn" onclick="hardRefresh()" title="금리 새로고침 (캐시 초기화)">↻</div>
+
+<!-- ── JavaScript 로드 (순서 중요) ────────────────────────────────────────── -->
+<!--
+  ★ 캐시 갱신 시 금리 관련 파일은 ?v= 값을 반드시 함께 변경:
+    · kb_rates.js — 캐시 키 변경 → localStorage 캐시 무효화 트리거
+    · ui.js       — _renderRateBadge / addLoan 갱신
+    · app.js      — 초기화 순서 갱신
+-->
+<script src="./js/loader.js?v=2604152030"></script>
+<script src="./js/kb_rates.js?v=2604152030"></script>
+<script src="./js/config.js?v=2604152030"></script>
+<script src="./js/utils.js?v=2604152030"></script>
+<script src="./js/modal.js?v=2604152030"></script>
+<script src="./js/ui.js?v=2604152030"></script>
+<script src="./js/calc.js?v=2604152030"></script>
+<script src="./js/schedule.js?v=2604152030"></script>
+<script src="./js/report.js?v=2604152030"></script>
+<script src="./js/admin.js?v=2604152030"></script>
+<script src="./js/app.js?v=2604152030"></script>
+</body>
+</html>

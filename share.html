@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>DSR 계산기 - 접속 안내</title>
+  <link rel="stylesheet" href="./css/common.css" media="all">
+  <link rel="manifest" href="app_main.json">
+  <style>
+    /* ── 컨테이너 ──────────────────────────────────────────────────────── */
+    .share-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: var(--bg-page);
+    }
+
+    /* ── 카드 공통 ─────────────────────────────────────────────────────── */
+    .share-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 36px 24px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    .share-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--kb-yellow), var(--kb-yellow-deep));
+    }
+
+    /* ── 카드 표시/숨김 ─────────────────────────────────────────────────
+       ★ loadingCard 는 display:none 하지 않음
+         → JS 실패/미로드 시에도 "링크 확인 중..." 반드시 표시
+       ★ mainCard, errorCard 는 JS가 활성화할 때까지 숨김              */
+    #mainCard,
+    #errorCard {
+      display: none;
+    }
+
+    /* ── 로딩 카드 ─────────────────────────────────────────────────────── */
+    .loading-spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid var(--border);
+      border-top-color: var(--kb-yellow-deep);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text-msg {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    /* ── 메인 카드 ─────────────────────────────────────────────────────── */
+    .icon-box         { font-size: 48px; margin-bottom: 16px; }
+    .share-title      { font-size: 18px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px; letter-spacing: -.02em; }
+    .share-desc       { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px; word-break: keep-all; }
+    .share-desc strong { color: var(--danger); }
+    .share-note       { font-size: 11px; color: var(--text-muted); display: block; margin-top: 8px; }
+    .btn-install {
+      width: 100%; height: 54px;
+      background: linear-gradient(135deg, var(--kb-yellow), var(--kb-yellow-deep));
+      border-radius: var(--radius-md);
+      color: var(--kb-navy);
+      font-size: 16px; font-weight: 900;
+      box-shadow: var(--shadow-kb);
+      margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: transform .15s;
+    }
+    .btn-install:active { transform: scale(.97); }
+    .btn-onetime {
+      width: 100%; height: 48px;
+      background: var(--bg-surface-2);
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 14px; font-weight: 700;
+    }
+
+    /* ── 에러 카드 ─────────────────────────────────────────────────────── */
+    .error-icon   { font-size: 48px; margin-bottom: 16px; }
+    .error-title  { font-size: 18px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px; }
+    .error-desc   { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; word-break: keep-all; }
+  </style>
+</head>
+<body>
+
+  <div class="share-container">
+
+    <!-- ── 로딩 카드 (기본 표시 — JS 없이도 노출) ───────────────────── -->
+    <div class="share-card" id="loadingCard">
+      <div class="loading-spinner"></div>
+      <p class="loading-text-msg">링크 확인 중...</p>
+    </div>
+
+    <!-- ── 메인 카드 (검증 성공 — JS가 표시) ────────────────────────── -->
+    <div class="share-card" id="mainCard">
+      <div class="icon-box">&#128242;</div>
+      <h2 class="share-title">DSR 계산기 접속 안내</h2>
+      <p class="share-desc">
+        현재 링크는 <strong>발급 후 24시간 동안만 유효한 1회성 임시 링크</strong>입니다.<br><br>
+        향후 지속적인 사용을 위해 아래 버튼으로<br>
+        기기에 앱을 설치(홈 화면 추가)하시기 바랍니다.
+        <span class="share-note">&#8987; 설치 후에는 링크 유효기간과 무관하게 영구 사용 가능</span>
+      </p>
+      <button class="btn-install" id="btnInstall">&#11015;&#65039; 기기에 앱 설치하기 (권장)</button>
+      <button class="btn-onetime" id="btnOneTime">설치하지 않고 1회성 접속하기</button>
+    </div>
+
+    <!-- ── 에러 카드 (만료/무효 — JS가 표시) ──────────────────────── -->
+    <div class="share-card" id="errorCard">
+      <div class="error-icon">&#128683;</div>
+      <h2 class="error-title">유효기간 만료</h2>
+      <p class="error-desc">
+        해당 링크는 유효기간(24시간)이 만료되었거나<br>
+        유효하지 않은 링크입니다.<br><br>
+        담당자에게 새로운 링크를 요청해주세요.
+      </p>
+    </div>
+
+  </div>
+
+  <script src="./js/share.js"></script>
+</body>
+</html>
