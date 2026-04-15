@@ -1,1 +1,431 @@
+<!-- ============================================================================
+  partials/guide.html — 사용자 / 관리자 가이드 모달
+  · 사용자 가이드 : #userGuideContent
+  · 관리자 매뉴얼 : #adminGuideContent
+  · 관리자 로그인 시 자동으로 관리자 탭이 노출됩니다 (openGuide 함수 제어)
+  ★ index.html 의 <div data-partial="partials/guide.html"> 에 자동 주입됨
+============================================================================ -->
 
+<div id="guideModal" class="guide-overlay" style="display:none;" onclick="closeGuideOnBackdrop(event)">
+	<div class="guide-box">
+		
+        <div id="userGuideContent">
+            <div class="guide-header">
+                <div class="guide-header-title">📖 DSR 계산기 사용 가이드</div>
+                <button class="guide-close-btn" onclick="closeGuide()" aria-label="닫기">×</button>
+            </div>
+            
+            <div class="guide-body">
+                <div class="guide-step">
+                    <div class="guide-step-num">1</div>
+                    <div class="guide-step-content">
+                        <div class="guide-step-title">연간 세전 소득 입력</div>
+                        <div class="guide-step-desc">
+                            근로소득, 사업소득 등 <b>세전(공제 전) 연간 소득</b>을 입력합니다.<br>
+                            건강보험료 납부 확인서 또는 근로소득 원천징수영수증을 참고하세요. <br>
+                            <span class="guide-tip">💡 최소 100만 원 이상 입력해야 계산됩니다</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">2</div>
+                    <div class="guide-step-content">
+                        <div class="guide-step-title">대출 종류 선택</div>
+                        <div class="guide-step-desc">
+                            보유 또는 신청 예정인 대출 종류를 선택합니다.<br>
+                            · <b>주택담보 (원리금)</b> — 매월 원금+이자를 함께 상환<br>
+                            · <b>주택담보 (원금)</b> — 원금균등 상환 방식<br>
+                            · <b>전세대출 (만기)</b> — 만기 일시 상환, <b>이자만 DSR 산정</b><br>
+                            · <b>오피스텔</b> — 구입자금이면 '주택담보'로 설정 권장<br>
+                            · <b>신용대출</b> — 가상 5년 만기로 DSR 산정<br>
+                            · <b>카드론</b> — 가상 3년 만기 고정 (DSR 부담 큼)
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">3</div>
+                    <div class="guide-step-content">
+                        <div class="guide-step-title">금리 유형 선택 (주택담보만 해당)</div>
+                        <div class="guide-step-desc">
+                            주택담보대출 선택 시 <b>금리 유형(담보)</b>에서 자동 금리 적용이 가능합니다.<br>
+                            · <b>5년변동 / 5년혼합</b> — 5년 주기 변동 (스트레스 금리 다름)<br>
+                            · <b>6,12개월변동</b> — 코픽스 연동 단기 변동형<br>
+                            · <b>직접 입력</b> — 금융기관에서 받은 실제 금리를 직접 입력<br>
+                            <span class="guide-tip">💡 금리 유형 선택 시 스트레스 금리가 자동 연동됩니다</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">4</div>
+                    <div class="guide-step-content">
+                        <div class="guide-step-title">원금/잔액 및 기간 입력</div>
+                        <div class="guide-step-desc">
+                            · <b>원금/잔액</b> — 신청 예정 대출금 또는 현재 남은 잔액<br>
+                            · <b>기간(개월)</b> — 대출 상환 기간 (예: 30년 → 360개월)<br>
+                            · 스트레스 금리는 상품 유형에 따라 자동 설정되며 수동 변경도 가능합니다. <br>
+                            <span class="guide-tip">💡 부채 항목 추가 버튼으로 여러 부채를 함께 분석할 수 있습니다</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">5</div>
+                    <div class="guide-step-content">
+                        <div class="guide-step-title">부채 상세 설정순서</div>
+                        <div class="guide-step-desc">
+							1. 대출종류 입력 <br/>
+							2. 금리유형 선택시 <b>금리랑 스트레스 금리 자동 셋팅됨</b><br/>
+                            <span class="guide-tip">💡 금리 업데이트가 안되는 경우 금리유형 직접입력으로 하여 진행 가능함</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">6</div>
+                    <div class="guide-step-content">
+                        <div class="guide-step-title">DSR 분석 및 한도 확인</div>
+                        <div class="guide-step-desc">
+                            모든 정보를 입력한 뒤 <b>DSR 분석 및 한도 확인</b> 버튼을 누르면<br>
+                            · 종합 DSR 지수 (규제선 40% 기준)<br>
+                            · 원금균등 / 원리금균등 방식별 최대 대출 한도<br>
+                            · 현재 추가 가능한 대출 여력<br>
+                            을 확인할 수 있습니다.
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">7</div>
+                    <div class="guide-step-content">
+                        <div class="guide-step-title">상환 스케줄 확인</div>
+                        <div class="guide-step-desc">
+                            · <b>전체 상환 스케줄</b> — <b>원금균등 / 원리금균등</b> 탭을 전환하며 전회차 확인 가능<br>
+                            · 대출별 월 납입액(원리금균등·원금균등 1회차) 나란히 비교 표시<br>
+                            <span class="guide-tip">💡 스케줄 표 하단 스크롤로 전 회차를 확인할 수 있습니다</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">8</div>
+                    <div class="guide-step-content">
+                        <div class="guide-step-title">DSR 진단 리포트 공유</div>
+                        <div class="guide-step-desc">
+                            · <b>리포트 복사 버튼</b> 클릭 → 상담사 연락처 입력 모달 팝업<br>
+                            &nbsp;&nbsp;&nbsp;— 전화번호 입력 후 <b>워터마크 추가</b> : 리포트에 상담사 연락처 포함<br>
+                            &nbsp;&nbsp;&nbsp;— <b>닫기(일반 공유)</b> : 워터마크 없이 바로 공유<br>
+                            &nbsp;&nbsp;&nbsp;— <b>X 버튼</b> : 공유 취소<br>
+                            · 생성된 링크는 <b>7일간 유효</b>하며, 최초 수신자만 접속 가능<br>
+                            · 문자 공유 시 TinyURL 중간 화면이 나타날 수 있습니다<br>
+                            &nbsp;&nbsp;&nbsp;→ <b>Preview 클릭</b> 또는 <b>10초 후 자동 이동</b>됩니다<br>
+                            <span class="guide-tip">💡 리포트 접속 시 "금융 정보 보호 공지" 팝업이 표시됩니다 — 7일 자동 파기 안내</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">9</div>
+                    <div class="guide-step-content">
+                        <div class="guide-step-title">기존 금리가 변경이 안되있는 경우</div>
+                        <div class="guide-step-desc">
+                            · 오른쪽 하단에 있는 <b>새로고침 버튼</b>을 눌러 초기화 시켜주세요<br>
+                            <span class="guide-tip">💡 안드로이드는 브라우저 캐시, 아이폰은 사파리 캐시 삭제</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-divider"></div>
+                <div class="guide-warn-box">
+                    ⚠️ <b>주의</b> — 본 계산기는 참고용 예상 수치입니다.<br>
+                    실제 DSR 산정은 금융기관의 심사 기준에 따라 달라질 수 있으며,<br>
+                    대출 실행 전 반드시 담당 금융기관에 확인하시기 바랍니다.
+                </div>
+            </div><div class="guide-footer">
+                <button class="guide-start-btn" onclick="closeGuide()">✅ 확인했습니다 — 시작하기</button>
+            </div>
+        </div><div id="adminGuideContent" style="display:none;">
+			<div class="guide-header">
+				<div class="guide-header-title" style="color:#d32f2f;">🛠️ 시스템 관리자 매뉴얼</div>
+				<button class="guide-close-btn" onclick="closeGuide()" aria-label="닫기">×</button>
+			</div>
+			<div class="guide-body">
+
+				<!-- ① 공지사항 강제 노출 -->
+				<div class="guide-step">
+					<div class="guide-step-num">1</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">공지사항 강제 노출 (NOTICE_VERSION)</div>
+						<div class="guide-step-desc">
+							앱 재설치 없이 중요 팝업을 모든 고객에게 다시 띄우는 로직입니다.<br>
+							· <b>수정 위치:</b> <code>common.js</code> → <code>APP_CONFIG.NOTICE_VERSION</code><br>
+							· <b>방법:</b> 값을 한 단계 올립니다 (예: <code>'0781_7'</code> → <code>'0781_8'</code>)<br>
+							· <b>원리:</b> "다시 보지 않기" 설정이 이전 버전 키(<code>hideNotice_0781_7</code>)로 저장되어 있으므로, 버전이 바뀌면 새 공지로 인식해 강제 노출합니다.<br>
+							<span class="guide-tip">💡 ?v= 버전도 함께 올려야 브라우저 캐시가 즉시 갱신됩니다 (→ 항목 8 참조)</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ② 실시간 금리 연동 -->
+				<div class="guide-step">
+					<div class="guide-step-num">2</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">실시간 금리 연동 및 UI 자동화</div>
+						<div class="guide-step-desc">
+							매주 바뀌는 대출 금리를 HTML 수정 없이 자동 반영합니다.<br>
+							· <b>금리 원본:</b> <code>kb/interest/script.js</code> 의 <code>r.base</code> · <code>r.stress</code> · <code>r.add.mort</code> 블록<br>
+							· <b>로더:</b> <code>kb_rates.js</code> 가 파싱 후 <code>APP_CONFIG.KB_MORTGAGE_RATES</code> · <code>STRESS_RATES</code> 에 주입<br>
+							· <b>UI 반영:</b> <code>_syncAllRateSelects()</code> 가 셀렉트 옵션 텍스트를 자동 갱신 (value는 식별자 고정)<br>
+							· <b>캐시 갱신:</b> <code>kb_rates.js?v=</code> 버전을 올리면 구버전 로컬스토리지 캐시가 자동 무효화됩니다<br>
+							<span class="guide-tip">💡 파싱 실패 시 FALLBACK_RATES 폴백값 자동 적용 — 계산기는 항상 동작합니다</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ③ PWA 캐시 무효화 -->
+				<div class="guide-step">
+					<div class="guide-step-num">3</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">PWA 캐시 무효화 (매니페스트 분리)</div>
+						<div class="guide-step-desc">
+							PWA의 강력한 캐시로 인해 업데이트가 지연되는 현상을 차단합니다.<br>
+							· <b>구조:</b> 사용자용 <code>app_main.json</code> / 관리자용 <code>app_admin.json</code> 분리 운용<br>
+							· <b>원리:</b> <code>start_url</code> 이 다르면 브라우저가 완전히 다른 PWA 앱으로 인식 → 캐시 충돌 없음<br>
+							· <b>강제 갱신:</b> FAB 새로고침 버튼(↻)이 Cache API + Service Worker 전체 초기화 후 재로드<br>
+							<span class="guide-tip">💡 JS·CSS 파일 수정 시에는 항목 8의 ?v= 버전 업이 필수입니다</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ④ 1회성 링크 보안 시스템 -->
+				<div class="guide-step">
+					<div class="guide-step-num">4</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">1회성 링크 보안 시스템 (HMAC-SHA256)</div>
+						<div class="guide-step-desc">
+							고객 배포용 단축 링크의 위변조·재사용을 3단으로 차단합니다.<br>
+							· <b>① 만료 시각 검증:</b> 토큰에 ms 타임스탬프(<code>exp</code>)가 포함 — 기간 초과 시 즉시 차단<br>
+							· <b>② 서명 검증 (HMAC-SHA256):</b> <code>exp</code>·<code>url</code>·<code>nonce</code> 중 하나라도 조작하면 서명 불일치로 차단<br>
+							· <b>③ 1회성 소인:</b> 접속 기기의 localStorage에 <code>nonce</code> 기록 → 같은 기기 재접속 차단<br><br>
+							· <b>서명 키 위치:</b> <code>common.js</code> 와 <code>share.js</code> 각 최상단 <code>_OTL_SIGN_KEY</code><br>
+							· <b>⚠ 중요:</b> 두 파일의 키 값이 반드시 동일해야 합니다 — 키를 바꾸면 기존 링크 전체 즉시 무효화<br>
+							<span class="guide-tip">💡 링크 유효시간 변경은 항목 5에서 별도 설명합니다</span>
+						</div>
+					</div>
+				</div>
+
+									<!-- ⑤ 링크 유효시간 통합 가이드 (앱 설치 링크 + 리포트 링크) -->
+					<div class="guide-step">
+						<div class="guide-step-num">5</div>
+						<div class="guide-step-content">
+							<div class="guide-step-title">유효시간 변경 가이드 — 앱 설치 링크 / 리포트 링크</div>
+							<div class="guide-step-desc">
+								각 링크의 유효시간은 아래 파일의 숫자 하나만 바꾸면 즉시 적용됩니다.<br><br>
+
+								<b>① 앱 설치 / 임시 접속 링크 (share.html)</b><br>
+								· <b>수정 위치:</b> <code>js/admin.js</code> → <code>generateAdminShareLink()</code> 함수 내 <code>SHARE_LINK_TTL_MS</code><br>
+								· <b>동작 방식:</b> 최초 클릭 기기에 바인딩 → 유효기간 내 다회 접속 허용 → 다른 기기에서 열면 차단<br>
+								· <b>관리자 기기:</b> 세션이 유효하면 모든 링크 무제한 접속 가능<br>
+								<!-- ★ 유효시간 변경 예시 — 아래 주석 중 하나의 숫자를 복사해서 SHARE_LINK_TTL_MS 에 붙여넣으세요 -->
+								&nbsp;&nbsp;&nbsp;— &nbsp;<code>1  * 60 * 60 * 1000</code> = 1시간<br>
+								&nbsp;&nbsp;&nbsp;— &nbsp;<code>6  * 60 * 60 * 1000</code> = 6시간<br>
+								&nbsp;&nbsp;&nbsp;— &nbsp;<code>12 * 60 * 60 * 1000</code> = 12시간<br>
+								&nbsp;&nbsp;&nbsp;— &nbsp;<code>24 * 60 * 60 * 1000</code> = 24시간 ← <b>현재값</b><br>
+								&nbsp;&nbsp;&nbsp;— &nbsp;<code>48 * 60 * 60 * 1000</code> = 48시간<br><br>
+
+								<b>② DSR 진단 리포트 링크 (report.html)</b><br>
+								· <b>수정 위치:</b> <code>js/config.js</code> → <code>APP_CONFIG.REPORT_LINK_EXPIRY_DAYS</code><br>
+								· <b>동작 방식:</b> 최초 수신 기기에 바인딩 → 7일간 다회 접속 허용 → 다른 기기에서 열면 차단<br>
+								· <b>관리자 기기:</b> 세션이 유효하면 모든 리포트 무제한 접속 가능<br>
+								<!-- ★ 유효기간 변경 — 숫자(일 수)만 바꾸면 됩니다 -->
+								&nbsp;&nbsp;&nbsp;— &nbsp;<code>REPORT_LINK_EXPIRY_DAYS: 3</code> = 3일<br>
+								&nbsp;&nbsp;&nbsp;— &nbsp;<code>REPORT_LINK_EXPIRY_DAYS: 7</code> = 7일 ← <b>현재값</b><br>
+								&nbsp;&nbsp;&nbsp;— &nbsp;<code>REPORT_LINK_EXPIRY_DAYS: 14</code> = 14일<br>
+								&nbsp;&nbsp;&nbsp;— &nbsp;<code>REPORT_LINK_EXPIRY_DAYS: 30</code> = 30일<br><br>
+
+								<b>③ 공통 주의사항</b><br>
+								· 유효시간 변경 후 반드시 <b>?v= 버전을 올려야</b> 모든 기기에 즉시 반영됩니다<br>
+								· 이미 발급된 링크의 유효시간은 소급 적용되지 않습니다 (새로 발급한 링크부터 적용)<br>
+								· 관리자 기기에서 <code>kb_admin_session</code> 이 유효한 동안에는 모든 링크 무제한 접속
+								<span class="guide-tip">💡 테스트 시 관리자 로그인 상태에서는 차단 로직이 우회됩니다 — 일반 시크릿 탭에서 확인하세요</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- ⑥ 리포트 링크 제어 -->
+				<div class="guide-step">
+					<div class="guide-step-num">6</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">리포트 링크 발급량 · 유효기간 제어</div>
+						<div class="guide-step-desc">
+							고객용 DSR 진단 리포트 링크의 남용 방지 및 만료를 제어합니다.<br>
+							· <b>일일 발급 한도:</b> <code>common.js</code> → <code>APP_CONFIG.REPORT_COPY_DAILY_LIMIT</code> (기본 10회)<br>
+							&nbsp;&nbsp;&nbsp;— 오늘 날짜 기준 카운팅, 초과 시 버튼 비활성화<br>
+							· <b>링크 유효기간:</b> <code>common.js</code> → <code>APP_CONFIG.REPORT_LINK_EXPIRY_DAYS</code> (기본 7일)<br>
+							&nbsp;&nbsp;&nbsp;— <code>report.html</code> 에서 만료 여부 자동 판별<br>
+							· <b>원리:</b> 로컬스토리지에 날짜별 카운트 저장, 8일 지난 기록은 자동 삭제<br>
+							<span class="guide-tip">💡 리포트 링크는 1회성이 아닌 다회 공유용입니다 — 단축 링크(share.html)와 다릅니다</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ⑦ 관리자 계정 설정 -->
+				<div class="guide-step">
+					<div class="guide-step-num">7</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">관리자 계정 초기값 설정</div>
+						<div class="guide-step-desc">
+							최초 배포 전 관리자 아이디·비밀번호·대표 URL을 설정합니다.<br>
+							· <b>수정 위치:</b> <code>admin.js</code> 최상단 <code>DEFAULT_CONFIG</code> 블록<br>
+							&nbsp;&nbsp;&nbsp;— <code>id</code>: 관리자 아이디<br>
+							&nbsp;&nbsp;&nbsp;— <code>pw</code>: 비밀번호 — <b>배포 전 반드시 변경</b><br>
+							&nbsp;&nbsp;&nbsp;— <code>mainUrl</code>: 로그인 후 이동할 대표 페이지 경로<br>
+							· <b>운용 중 변경:</b> 로그인 페이지 하단 <b>⚙️ 관리자 설정 변경</b> 모달로 즉시 수정 가능<br>
+							· <b>저장 위치:</b> localStorage(<code>kb_admin_config</code>) — 기기별 독립 저장<br>
+							· <b>세션 유효기간:</b> 로그인 후 24시간, 이후 자동 로그아웃<br>
+							<span class="guide-tip">💡 DEFAULT_CONFIG 는 localStorage 기록이 없을 때만 사용되는 초기값입니다</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ⑧ 캐시 버전 업 -->
+				<div class="guide-step">
+					<div class="guide-step-num">8</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">파일 수정 후 캐시 버전 업 (필수)</div>
+						<div class="guide-step-desc">
+							JS·CSS 파일을 수정할 때마다 호출 버전을 올려야 사용자 브라우저 캐시가 갱신됩니다.<br>
+							· <b>수정 위치:</b> <code>index.html</code> 하단 스크립트 태그의 <code>?v=</code> 쿼리<br>
+							&nbsp;&nbsp;&nbsp;— <code>common.css?v=<b>YYYYMMDDHHNN</b></code> — CSS 수정 시 변경<br>
+							&nbsp;&nbsp;&nbsp;— <code>kb_rates.js?v=<b>YYYYMMDDHHNN</b></code> — 금리 업데이트 시 반드시 변경<br>
+							&nbsp;&nbsp;&nbsp;— <code>common.js?v=<b>YYYYMMDDHHNN</b></code> — 로직 수정 시 반드시 변경<br>
+							· <b>권장 값:</b> 수정일시 12자리 (예: <code>260329 1824</code> = 26년 03월 29일 18:24)<br>
+							· <b>kb_rates.js 캐시 키:</b> <code>?v=</code> 값을 읽어 localStorage 키로 사용 → 버전이 바뀌면 구버전 금리 캐시 자동 폐기<br>
+							<span class="guide-tip">💡 세 파일의 ?v= 값이 달라도 무방합니다 — 각각 독립적으로 캐시를 관리합니다</span>
+						</div>
+					</div>
+				</div>
+
+
+				<!-- ⑨ 파일 구조 및 관리 (신규) -->
+				<div class="guide-step">
+					<div class="guide-step-num">9</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">파일 구조 및 역할 분리 (리팩토링 v2)</div>
+						<div class="guide-step-desc">
+							각 기능이 독립 파일로 분리되어 있어 수정 범위를 최소화할 수 있습니다.<br>
+							<b>CSS 파일</b><br>
+							&nbsp;&nbsp;&nbsp;— <code>style.css</code>: 메인 테마 변수 · 공통 컴포넌트<br>
+							&nbsp;&nbsp;&nbsp;— <code>css/report.css</code>: 리포트 페이지 전용 스타일<br>
+							&nbsp;&nbsp;&nbsp;— <code>css/share.css</code>: 앱 설치 링크 게이트 스타일<br>
+							&nbsp;&nbsp;&nbsp;— <code>css/modal.css</code>: 전화번호 워터마크 모달 스타일<br>
+							&nbsp;&nbsp;&nbsp;— <code>admin.css</code>: 관리자 로그인 페이지 스타일<br><br>
+							<b>JS 파일 (로드 순서 중요)</b><br>
+							&nbsp;&nbsp;&nbsp;1. <code>js/loader.js</code>: partials 주입기 (제일 먼저)<br>
+							&nbsp;&nbsp;&nbsp;2. <code>js/kb_rates.js</code>: KB 금리 파서<br>
+							&nbsp;&nbsp;&nbsp;3. <code>js/config.js</code>: APP_CONFIG 설정 블록<br>
+							&nbsp;&nbsp;&nbsp;4. <code>js/utils.js</code>: 순수 유틸 함수<br>
+							&nbsp;&nbsp;&nbsp;5. <code>js/modal.js</code>: 모달 제어 로직<br>
+							&nbsp;&nbsp;&nbsp;6. <code>js/ui.js</code>: UI 렌더링 · 부채 항목 · 가이드<br>
+							&nbsp;&nbsp;&nbsp;7. <code>js/calc.js</code>: DSR 연산 엔진 · 역행 계산기<br>
+							&nbsp;&nbsp;&nbsp;8. <code>js/schedule.js</code>: 상환 스케줄<br>
+							&nbsp;&nbsp;&nbsp;9. <code>js/report.js</code>: 리포트 빌드 · OTL · 공유<br>
+							&nbsp;&nbsp;&nbsp;10. <code>js/admin.js</code>: 관리자 UI (세션 체크 · 링크 생성)<br>
+							&nbsp;&nbsp;&nbsp;11. <code>js/app.js</code>: window.onload 진입점 (마지막)<br><br>
+							<b>Partials (HTML 조각, 자동 주입)</b><br>
+							&nbsp;&nbsp;&nbsp;— <code>partials/guide.html</code>: 사용자·관리자 가이드 모달<br>
+							&nbsp;&nbsp;&nbsp;— <code>partials/notice.html</code>: 공지 팝업 (내용 수정 후 NOTICE_VERSION 올림)<br>
+							&nbsp;&nbsp;&nbsp;— <code>partials/modals.html</code>: 알림·전화번호·로그아웃 모달<br>
+							<span class="guide-tip">💡 기능별 파일만 열면 되어 1300줄 common.js 를 전부 볼 필요가 없습니다</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ⑩ 리포트 링크 보안 — 기기 바인딩 & 재공유 차단 -->
+				<div class="guide-step">
+					<div class="guide-step-num">10</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">리포트 링크 보안 — 기기 바인딩 & 재공유 차단</div>
+						<div class="guide-step-desc">
+							<b>동작 방식</b><br>
+							&nbsp;&nbsp;&nbsp;① 관리자 기기 (<code>kb_admin_session</code> 유효) → 모든 링크 <b>무제한 접속</b><br>
+							&nbsp;&nbsp;&nbsp;② 최초 수신 기기 → <code>rpt_grant_{nonce}</code> localStorage 바인딩 → 7일간 <b>다회 접속 허용</b><br>
+							&nbsp;&nbsp;&nbsp;③ 다른 기기에서 링크 복사·전달 → <b>"공유 불가 링크" 에러 표시</b><br><br>
+							<b>앱 설치 링크(share.html)도 동일 구조</b><br>
+							&nbsp;&nbsp;&nbsp;— <code>share_grant_{nonce}</code> 바인딩 → 유효기간 내 다회 접속<br>
+							&nbsp;&nbsp;&nbsp;— 관리자 기기에서 발급한 모든 링크 무제한 재접속 가능<br>
+							<span class="guide-tip">💡 테스트 시 시크릿 탭(다른 기기 시뮬레이션)에서 차단 여부를 확인하세요</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ⑪ 상담사 워터마크 설정 -->
+				<div class="guide-step">
+					<div class="guide-step-num">11</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">상담사 연락처 워터마크</div>
+						<div class="guide-step-desc">
+							<b>두 가지 설정 방법</b><br>
+							&nbsp;&nbsp;&nbsp;① <b>공유 시 직접 입력</b> (권장) — 리포트 복사 버튼 클릭 시 팝업에서 입력<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· 입력 시: 리포트에 "CONSULTANT CONTACT + 전화번호" 배너 포함<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· 닫기 클릭: 워터마크 없이 일반 공유<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· X 클릭: 공유 자체 취소<br>
+							&nbsp;&nbsp;&nbsp;② <b>관리자 설정에 기본값 등록</b> — <code>admin.html</code> → 설정 변경 → 상담사 연락처 입력<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· 저장 위치: <code>js/admin-login.js</code> <code>DEFAULT_CONFIG.phone</code><br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· 팝업에서 별도 입력 없이도 자동 포함됨<br>
+							<span class="guide-tip">💡 전화번호 형식: 010-0000-0000 (숫자만 입력해도 자동 하이픈 적용)</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ⑫ 리포트 URL 구조 & 공유 메시지 -->
+				<div class="guide-step">
+					<div class="guide-step-num">12</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">리포트 URL 구조 & 공유 메시지 커스텀</div>
+						<div class="guide-step-desc">
+							<b>URL 구조 (v3 URL-safe base64)</b><br>
+							&nbsp;&nbsp;&nbsp;<code>report.html?st={서명토큰}&amp;d={압축데이터}</code><br>
+							&nbsp;&nbsp;&nbsp;— <code>st=</code>: HMAC-SHA256 서명 토큰 (1회성 수신자 검증)<br>
+							&nbsp;&nbsp;&nbsp;— <code>d=</code>: URL-safe base64 압축 데이터 (+/-/_ 치환, = 패딩 제거)<br>
+							&nbsp;&nbsp;&nbsp;— 기존 v2 포맷 링크도 자동 하위 호환<br><br>
+							<b>TinyURL 중간 페이지 안내 문구 변경</b><br>
+							&nbsp;&nbsp;&nbsp;· 수정 위치: <code>js/report.js</code> → <code>customerMsg</code> 변수<br>
+							&nbsp;&nbsp;&nbsp;· 현재 문구: "Preview 를 클릭하거나 10초 뒤 페이지가 자동 이동됩니다."<br>
+							&nbsp;&nbsp;&nbsp;· 카카오톡 공유: 안내 문구 + URL 을 네이티브 공유 시트로 전송<br>
+							&nbsp;&nbsp;&nbsp;· PC / 문자: URL + 안내 문구를 클립보드에 함께 복사<br>
+							<span class="guide-tip">💡 5개 대출 최악 케이스도 ~1250자 — SMS 안전 기준(1600자) 이내</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ⑬ 단계별 로딩 오버레이 -->
+				<div class="guide-step">
+					<div class="guide-step-num">13</div>
+					<div class="guide-step-content">
+						<div class="guide-step-title">단계별 로딩 오버레이 (↻ 새로고침 버튼)</div>
+						<div class="guide-step-desc">
+							↻ FAB 버튼 클릭 시 3단계 순차 활성화 애니메이션이 표시됩니다.<br><br>
+							&nbsp;&nbsp;&nbsp;① <b>서비스 워커 업데이트</b> — SW 등록 해제<br>
+							&nbsp;&nbsp;&nbsp;② <b>브라우저 캐시 삭제</b> — Cache API + KB 금리 localStorage 초기화<br>
+							&nbsp;&nbsp;&nbsp;③ <b>최신 금리 불러오기</b> — 완료 후 자동 리로드<br><br>
+							<b>단계 카드 스타일 수정</b><br>
+							&nbsp;&nbsp;&nbsp;· <code>style.css</code> → <code>.loading-step</code>, <code>.loading-step.active</code>, <code>.loading-step.done</code><br>
+							<b>단계 카드 텍스트 수정</b><br>
+							&nbsp;&nbsp;&nbsp;· <code>index.html</code> → <code>#lstep1 ~ #lstep3</code> <code>.lstep-label</code> 텍스트<br>
+							<span class="guide-tip">💡 서브 문구는 app.js 의 _lstepActive() 호출부에서 변경 가능합니다</span>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="guide-divider"></div>
+				<div class="guide-warn-box">
+					⚠️ <b>보안 주의</b><br>
+					· <code>js/admin-login.js</code> <code>DEFAULT_CONFIG.pw</code> — 배포 전 반드시 변경하세요.<br>
+					· <code>_OTL_SIGN_KEY</code> 는 <code>js/report.js</code> · <code>js/share.js</code> · <code>js/report-page.js</code> 세 파일이 <b>항상 동일</b>해야 합니다.<br>
+					&nbsp;&nbsp;&nbsp;→ 하나라도 다르면 모든 발급 링크가 즉시 무효화됩니다.<br>
+					· localStorage <code>kb_admin_config</code> 구버전 잔존 시 로그인 불가 → 콘솔에서 <code>localStorage.removeItem('kb_admin_config')</code> 실행.
+				</div>
+			</div>
+			<div class="guide-footer">
+				<button class="guide-start-btn" onclick="closeGuide()">닫기</button>
+			</div>
+		</div>
+
+
+	</div>
+</div>

@@ -1,0 +1,60 @@
+<!-- ============================================================================
+  partials/modals.html — 메인 모달 모음
+  · customModal  : 범용 알림 모달 (showAlert 에서 사용)
+  · phoneModal   : 리포트 공유 시 상담사 전화번호 입력 모달
+  · logoutModal  : 관리자 로그아웃 확인 모달
+  ★ index.html 의 <div data-partial="partials/modals.html"> 에 자동 주입됨
+============================================================================ -->
+
+<!-- ── 범용 알림 모달 ─────────────────────────────────────────────────────── -->
+<div id="customModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <span id="modalIcon" class="modal-icon">⚠️</span>
+    <div id="modalMsg" class="modal-text">알림 문구</div>
+    <button class="modal-btn" id="modalConfirm">확인</button>
+  </div>
+</div>
+
+<!-- ── 상담사 전화번호 워터마크 모달 ─────────────────────────────────────── -->
+<div id="phoneModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content phone-modal-content">
+    <div class="phone-modal-header">
+      <span class="modal-icon phone-modal-icon">📋</span>
+      <button id="phoneModalClose" class="phone-modal-close" aria-label="닫기">×</button>
+    </div>
+    <div class="phone-modal-title">상담사 연락처 추가 (선택)</div>
+    <div class="phone-modal-desc">
+      전화번호 입력 시 리포트에 <b>담당 상담사 연락처 워터마크</b>가 추가됩니다.<br>
+      <span class="phone-modal-desc-muted">
+        원치 않으시면 <b>닫기</b>를 누르시면 일반 리포트로 공유됩니다.<br>
+        상단 X 클릭 시 공유가 취소됩니다.
+      </span>
+    </div>
+    <input type="tel" id="phoneModalInput"
+           class="phone-modal-input"
+           placeholder="010-0000-0000"
+           maxlength="13"
+           inputmode="numeric"
+           oninput="formatPhone(this)"
+           autocomplete="off">
+    <div id="phoneModalErr" class="phone-modal-err"></div>
+    <div class="phone-modal-btns">
+      <button id="phoneModalSkip"    class="modal-btn phone-modal-btn-skip">닫기 (일반 공유)</button>
+      <button id="phoneModalConfirm" class="modal-btn phone-modal-btn-confirm">워터마크 추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 로그아웃 확인 모달 ────────────────────────────────────────────────── -->
+<div id="logoutConfirmModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content logout-modal-content">
+    <span class="modal-icon">🔐</span>
+    <div class="modal-text logout-modal-text">
+      관리자 모드에서<br>로그아웃 하시겠습니까?
+    </div>
+    <div class="modal-btn-group-flex">
+      <button class="modal-btn modal-btn-secondary" onclick="closeLogoutModal()">취소</button>
+      <button class="modal-btn modal-btn-danger"    onclick="proceedAdminLogout()">로그아웃</button>
+    </div>
+  </div>
+</div>

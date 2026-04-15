@@ -1,0 +1,20 @@
+<!-- ============================================================================
+  partials/notice.html — 공지 팝업
+  · 앱 업데이트·공지 내용을 여기서 관리합니다
+  · 텍스트 변경 후 APP_CONFIG.NOTICE_VERSION 을 올리면 모든 기기에 강제 노출됩니다
+  ★ index.html 의 <div data-partial="partials/notice.html"> 에 자동 주입됨
+============================================================================ -->
+
+<div id="noticePopup" class="notice-overlay" style="display:none;">
+  <div class="notice-box">
+    <div class="notice-header">📢 업데이트 안내</div>
+    <div class="notice-body">
+      <span class="main-text">금리 자동 연동 · 사용 가이드 추가</span>
+      <span class="sub-text">담보대출 금리가 자동 적용되며, 상단 가이드 버튼에서 사용법을 확인할 수 있습니다.</span>
+    </div>
+    <div class="notice-footer">
+      <button onclick="closeNoticeForever()">다시 보지 않기</button>
+      <button onclick="closeNotice()" class="close-btn">확인</button>
+    </div>
+  </div>
+</div>
