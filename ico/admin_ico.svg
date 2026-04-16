@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#223570" />
+      <stop offset="100%" stop-color="#1A2B5A" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD100" />
+      <stop offset="100%" stop-color="#E6A000" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  
+  <g filter="url(#shadow)">
+    <rect x="156" y="240" width="200" height="130" rx="24" fill="url(#goldGrad)" />
+    
+    <circle cx="256" cy="285" r="16" fill="#1A2B5A" />
+    <path d="M246 285 L242 325 L270 325 L266 285 Z" fill="#1A2B5A" />
+    
+    <path d="M196 240 V 176 C 196 142.8 222.8 116 256 116 C 289.2 116 316 142.8 316 176 V 240" fill="none" stroke="url(#goldGrad)" stroke-width="36" stroke-linecap="round" />
+  </g>
+  
+  <text x="256" y="445" font-family="'Arial', -apple-system, sans-serif" font-size="48" font-weight="900" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="3">ADMIN</text>
+</svg>
