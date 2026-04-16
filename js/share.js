@@ -232,13 +232,34 @@ window.onload = function() {
     if (checkInAppBrowser()) return;
 
     // 2. 토큰 검증 → mainCard 또는 errorCard 표시
-    //    (loadingCard는 HTML에서 기본 표시 중 — 여기서 교체)
     validateToken();
+
+    // ★★★ 2-B. Service Worker 등록 (PWA 설치 필수 조건) ★★★
+    // beforeinstallprompt 이벤트는 SW 활성 상태일 때만 발생
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js', { scope: './' })
+        .then(function(reg) {
+          console.log('[share.js] ✅ Service Worker 등록 OK (scope:', reg.scope + ')');
+        })
+        .catch(function(err) {
+          console.warn('[share.js] ⚠ Service Worker 등록 실패:', err && err.message);
+        });
+    } else {
+      console.warn('[share.js] ⚠ 브라우저가 Service Worker 미지원 — PWA 설치 불가');
+    }
 
     // 3. PWA 설치 이벤트 캐치
     window.addEventListener('beforeinstallprompt', function(e) {
+      console.log('[share.js] ✅ beforeinstallprompt 이벤트 발생 — 설치 가능');
       e.preventDefault();
       deferredPrompt = e;
+    });
+
+    // 3-B. 설치 완료 감지 (Android Chrome/Samsung Internet)
+    window.addEventListener('appinstalled', function() {
+      console.log('[share.js] ✅ PWA 설치 완료');
+      deferredPrompt = null;
+      showInstallSuccess();
     });
 
     // 4. 설치 버튼
@@ -246,21 +267,36 @@ window.onload = function() {
     if (btnInstall) {
       btnInstall.addEventListener('click', function() {
         if (deferredPrompt) {
+          console.log('[share.js] 설치 프롬프트 표시');
           deferredPrompt.prompt();
           deferredPrompt.userChoice.then(function(result) {
+            console.log('[share.js] 사용자 선택:', result.outcome);
             if (result.outcome === 'accepted') {
               deferredPrompt = null;
               showInstallSuccess();
             }
           });
         } else {
-          var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+          console.warn('[share.js] ⚠ deferredPrompt 없음 — SW 미등록 or 이미 설치됨 or 조건 미충족');
+          var ua    = navigator.userAgent;
+          var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+          var isSamsung = /SamsungBrowser/i.test(ua);
+          var isAndroid = /Android/i.test(ua);
+
           if (isIOS) {
             alert('\uc544\uc774\ud3f0 \ud558\ub2e8\uc758 [\uacf5\uc720] \ubc84\ud2bc\uc744 \ub204\ub978 \ud6c4\n' +
                   '[\ud648 \ud654\uba74\uc5d0 \ucd94\uac00]\ub97c \uc120\ud0dd\ud558\uc5ec \uc124\uce58\ud574\uc8fc\uc138\uc694.');
+          } else if (isSamsung) {
+            alert('\uc0bc\uc131 \ube0c\ub77c\uc6b0\uc800:\n' +
+                  '\ud558\ub2e8 \uc911\uc559 [\u2630 \uba54\ub274] \ubc84\ud2bc \u2192\n' +
+                  '[\ud398\uc774\uc9c0 \ucd94\uac00] \u2192 [\ud648 \ud654\uba74] \uc120\ud0dd');
+          } else if (isAndroid) {
+            alert('\ud06c\ub86c \ube0c\ub77c\uc6b0\uc800:\n' +
+                  '\uc6b0\uce21 \uc0c1\ub2e8 [\u22ee \uba54\ub274] \u2192\n' +
+                  '[\uc571 \uc124\uce58] \ub610\ub294 [\ud648 \ud654\uba74\uc5d0 \ucd94\uac00] \uc120\ud0dd');
           } else {
-            alert('\ube0c\ub77c\uc6b0\uc800 \uba54\ub274(\uc6b0\uce21 \uc0c1\ub2e8 \u22ee)\uc5d0\uc11c\n' +
-                  '\'\uc571 \uc124\uce58\' \ub610\ub294 \'\ud648 \ud654\uba74\uc5d0 \ucd94\uac00\'\ub97c \uc120\ud0dd\ud574\uc8fc\uc138\uc694.');
+            alert('\ube0c\ub77c\uc6b0\uc800 \uba54\ub274\uc5d0\uc11c\n' +
+                  '[\uc571 \uc124\uce58] \ub610\ub294 [\ud648 \ud654\uba74\uc5d0 \ucd94\uac00]\ub97c \uc120\ud0dd\ud574\uc8fc\uc138\uc694.');
           }
         }
       });
