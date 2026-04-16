@@ -13,25 +13,25 @@
   "categories": ["finance", "productivity", "business"],
   "icons": [
     {
-      "src": "../ico/favicon-light.png",
+      "src": "./ico/favicon-light.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "../ico/favicon-light.png",
+      "src": "./ico/favicon-light.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "../ico/favicon-light.png",
+      "src": "./ico/favicon-light.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "../ico/favicon-light.png",
+      "src": "./ico/favicon-light.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
