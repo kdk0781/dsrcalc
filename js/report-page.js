@@ -1,10 +1,15 @@
 /* =============================================================================
-   js/report-page.js — DSR 진단 리포트 렌더러 v5 (VER 2026.07-RATE-FIX)
+   js/report-page.js — DSR 진단 리포트 렌더러 v5 (VER 2026.07-NOTICE-FIX)
    ─────────────────────────────────────────────────────────────────────────────
-   ★ v2026.07-RATE-FIX 변경사항
+   ★ v2026.07-NOTICE-FIX 변경사항
+     · "오늘 하루 보지 않기" 저장 로직 견고화
+       - 단일 키(rpt_notice_last_hidden) + 저장일 비교 방식으로 전환
+       - KST 기준 날짜 사용 (UTC 자정 이슈 회피)
+       - sessionStorage 폴백 추가 (프라이빗 모드 대응)
+       - 팝업 HTML 자체를 조건부 생성 (타이밍 이슈 완전 제거)
      · 월 납입액 표시는 모두 명목금리(R) 기준 — 스케줄 표와 정확히 일치
      · 스트레스 금리(SR)는 DSR 연산 전용 (종합 DSR 지수 카드에서만 사용)
-     · 전세 단일 그리드 100% 너비 + 가독성 향상 (22px 폰트, 중앙정렬)
+     · 전세 단일 그리드 100% 너비 + 가독성 향상
    ─────────────────────────────────────────────────────────────────────────────
    ① 관리자 기기 (kb_admin_session 유효) → 무제한 접속
    ② 최초 수신 기기 → 기기 바인딩 후 유효기간 다회 접속 허용
@@ -15,7 +20,7 @@
    ★ _RPT_SIGN_KEY 는 js/report.js 의 _OTL_SIGN_KEY 와 동일해야 합니다
    ============================================================================= */
 
-console.log('[report-page.js] v2026.07-RATE-FIX 로드됨');
+console.log('[report-page.js] v2026.07-NOTICE-FIX 로드됨');
 
 const _RPT_SIGN_KEY  = 'KB_DSR_OTL_SIGN_2026';
 const _RPT_GRANT_PFX = 'rpt_grant_';
@@ -121,20 +126,75 @@ function startCountdown(expiry) {
 }
 
 // ─── 개인정보 보호 공지 팝업 ─────────────────────────────────────────────────
-function initReportNotice(expiryDays) {
-  const today   = new Date().toISOString().slice(0, 10);
-  const hideKey = 'rpt_notice_hide_' + today;
-  if (localStorage.getItem(hideKey) === 'true') return; // 오늘 숨김 처리됨
+// ★ v2026.07-NOTICE-FIX: localStorage 키 구조 변경 + 견고한 상태 복원
+//   이전 버그: rpt_notice_hide_{YYYY-MM-DD} 키가 날짜가 변경될 때 유실되거나
+//              여러 탭/세션에서 일관되지 않게 저장되는 현상
+//   해결: 단일 키(rpt_notice_last_hidden)에 마지막 숨김 날짜 저장
+//         다음 방문 시 저장된 날짜 === 오늘이면 팝업 스킵
+const _RPT_NOTICE_KEY = 'rpt_notice_last_hidden';
 
+function _todayStr() {
+  // KST 기준 YYYY-MM-DD (UTC 자정 문제 회피)
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function _isNoticeHiddenToday() {
+  const today = _todayStr();
+  try {
+    // localStorage 우선 체크
+    if (localStorage.getItem(_RPT_NOTICE_KEY) === today) {
+      console.log('[rpt-notice] localStorage 일치 — 숨김');
+      return true;
+    }
+    // sessionStorage 폴백 체크 (프라이빗 모드 등)
+    if (sessionStorage.getItem(_RPT_NOTICE_KEY) === today) {
+      console.log('[rpt-notice] sessionStorage 일치 — 숨김');
+      return true;
+    }
+    console.log('[rpt-notice] 저장값 없음/불일치 — 표시');
+    return false;
+  } catch (e) {
+    console.warn('[rpt-notice] storage 접근 실패:', e);
+    return false;
+  }
+}
+
+function initReportNotice(expiryDays) {
+  if (_isNoticeHiddenToday()) {
+    console.log('[rpt-notice] 오늘 숨김 처리됨 — 팝업 생략');
+    return;
+  }
   const popup = document.getElementById('rptNoticePopup');
-  if (popup) popup.style.display = 'flex';
+  if (popup) {
+    popup.style.display = 'flex';
+    console.log('[rpt-notice] 팝업 표시');
+  }
 }
+
 function closeReportNotice() {
-  document.getElementById('rptNoticePopup')?.remove();
+  const popup = document.getElementById('rptNoticePopup');
+  if (popup) popup.remove();
 }
+
 function hideReportNoticeToday() {
-  const today = new Date().toISOString().slice(0, 10);
-  localStorage.setItem('rpt_notice_hide_' + today, 'true');
+  const today = _todayStr();
+  try {
+    localStorage.setItem(_RPT_NOTICE_KEY, today);
+    // 저장 검증 — setItem 직후 getItem 실패 시 sessionStorage 폴백
+    if (localStorage.getItem(_RPT_NOTICE_KEY) !== today) {
+      console.warn('[rpt-notice] localStorage 저장 검증 실패 → sessionStorage 폴백');
+      sessionStorage.setItem(_RPT_NOTICE_KEY, today);
+    } else {
+      console.log('[rpt-notice] ✅ 저장 완료:', today);
+    }
+  } catch (e) {
+    console.error('[rpt-notice] 저장 실패:', e);
+    try { sessionStorage.setItem(_RPT_NOTICE_KEY, today); } catch (e2) {}
+  }
   closeReportNotice();
 }
 
@@ -458,7 +518,10 @@ function renderReport(d) {
   }
 
   // ━━━ [8] 개인정보 보호 팝업 HTML ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  const noticeHtml = `
+  // ★ v2026.07-NOTICE-FIX: "오늘 하루 보지 않기" 저장 시 아예 HTML 생성 안 함
+  //   이전 방식은 DOM 삽입 → JS 로 display:none 처리 → 타이밍 이슈로 잠깐 보임
+  //   신 방식은 HTML 생성 자체를 스킵 → 완전한 숨김 보장
+  const noticeHtml = _isNoticeHiddenToday() ? '' : `
     <div id="rptNoticePopup" style="
       position:fixed;inset:0;background:rgba(0,0,0,.6);
       display:flex;align-items:center;justify-content:center;
