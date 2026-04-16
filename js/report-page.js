@@ -1,5 +1,10 @@
 /* =============================================================================
-   js/report-page.js — DSR 진단 리포트 렌더러 v5
+   js/report-page.js — DSR 진단 리포트 렌더러 v5 (VER 2026.07-RATE-FIX)
+   ─────────────────────────────────────────────────────────────────────────────
+   ★ v2026.07-RATE-FIX 변경사항
+     · 월 납입액 표시는 모두 명목금리(R) 기준 — 스케줄 표와 정확히 일치
+     · 스트레스 금리(SR)는 DSR 연산 전용 (종합 DSR 지수 카드에서만 사용)
+     · 전세 단일 그리드 100% 너비 + 가독성 향상 (22px 폰트, 중앙정렬)
    ─────────────────────────────────────────────────────────────────────────────
    ① 관리자 기기 (kb_admin_session 유효) → 무제한 접속
    ② 최초 수신 기기 → 기기 바인딩 후 유효기간 다회 접속 허용
@@ -9,6 +14,8 @@
       3일  → 3   /  7일 → 7 (현재)  /  14일 → 14
    ★ _RPT_SIGN_KEY 는 js/report.js 의 _OTL_SIGN_KEY 와 동일해야 합니다
    ============================================================================= */
+
+console.log('[report-page.js] v2026.07-RATE-FIX 로드됨');
 
 const _RPT_SIGN_KEY  = 'KB_DSR_OTL_SIGN_2026';
 const _RPT_GRANT_PFX = 'rpt_grant_';
@@ -281,12 +288,15 @@ function renderReport(d) {
     </div>`;
 
   // ━━━ [4] 부채 상세 내역 (원리금균등 + 원금균등 둘 다 표시) ━━━━━━━━━━━━━━
+  // ★ 정책: 월 납입액 표시는 실제 상환 금액 = 명목금리(R) 기준
+  //         스트레스 금리(SR)는 DSR 연산 전용 (종합 DSR 지수 카드에서만 사용)
   let loanDetailHtml = '';
   if (d.loans && d.loans.length > 0) {
     const rows = d.loans.map((l, idx) => {
       const label   = CAT_LABELS[l.cat] || l.cat;
       const emoji   = CAT_EMOJI[l.cat]  || '📌';
-      const r_dsr   = (l.R + 0) / 1200; // 스트레스 제외 기본금리만
+      // ★ 폴백 계산: report.js 에서 monthlyLevel/monthlyPrin1 미전달 시에만 사용
+      //   둘 다 명목금리(l.R / 1200)만 사용 — 스트레스 제외
       const lvlMon  = l.monthlyLevel ?? Math.round(_pmt(l.P, l.R / 1200, l.n));
       const prinMon = l.monthlyPrin1 ?? Math.round((l.P / l.n) + l.P * (l.R / 1200));
       const isJeonse= l.cat === 'jeonse';
@@ -309,10 +319,13 @@ function renderReport(d) {
             <span class="ld-chip">금리 ${l.R.toFixed(2)}%</span>
           </div>
           ${isJeonse ? `
-          <div class="ld-payment-grid">
-            <div class="ld-payment-item">
-              <div class="ld-payment-label">월 이자 납입액</div>
-              <div class="ld-payment-value">${Math.round(l.P * l.R / 1200).toLocaleString()}원</div>
+          <div class="ld-payment-grid" style="grid-template-columns:1fr;">
+            <div class="ld-payment-item" style="width:100%;text-align:center;padding:18px 16px;">
+              <div class="ld-payment-label" style="font-size:13px;margin-bottom:6px;">
+                월 이자 납입액
+                <span class="ld-payment-sub" style="opacity:.75;font-weight:600;">(만기일시상환)</span>
+              </div>
+              <div class="ld-payment-value" style="font-size:22px;font-weight:900;letter-spacing:-.01em;">${Math.round(l.P * l.R / 1200).toLocaleString()}원</div>
             </div>
           </div>` : `
           <div class="ld-payment-grid">
