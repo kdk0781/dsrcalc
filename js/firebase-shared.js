@@ -31,13 +31,13 @@
   //  디케이님이 입력하신 값 그대로 유지 — 아래 3개만 실제 값인지 확인
   // ═════════════════════════════════════════════════════════════════════════
   var FIREBASE_CONFIG = {
-    apiKey:            "PASTE_API_KEY_HERE",
+    apiKey:            "AIzaSyAfulM63NxbpPPbBYaS0uj74kQM5MDvKxA",
     authDomain:        "dsrcalc.firebaseapp.com",
     databaseURL:       "https://dsrcalc-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId:         "dsrcalc",
     storageBucket:     "dsrcalc.firebasestorage.app",
-    messagingSenderId: "PASTE_SENDER_ID_HERE",
-    appId:             "PASTE_APP_ID_HERE"
+    messagingSenderId: "123456789012",
+    appId:             "1:123456789012:web:abcdef1234567890"
   };
 
   var _kbApp = null;
