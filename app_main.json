@@ -1,7 +1,7 @@
 {
-  "name": "KB DSR 계산기",
+  "name": "DSR 계산기",
   "short_name": "DSR계산기",
-  "description": "KB 스트레스 DSR 진단 및 대출 한도 분석",
+  "description": "스트레스 DSR 진단 및 대출 한도 분석",
   "lang": "ko-KR",
   "dir": "ltr",
   "start_url": "./index.html",
