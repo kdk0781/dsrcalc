@@ -105,14 +105,39 @@ window.onload = async function () {
     try {
       await applyKBRatesToConfig();
       _syncAllRateSelects();
+    } catch (e) {
+      console.warn('[app.js] 금리 로드 중 오류:', e);
     } finally {
       _showLoading(false);
     }
   }
+
+  // ★ 금리 신선도 배지 렌더링 (라이브/캐시/폴백)
+  //   이전 버전: 배지가 렌더 안 되는 버그 있었음
+  //   수정: onload 맨 끝에서 명시적 호출 + try/catch
+  try {
+    if (typeof _renderRateBadge === 'function') {
+      _renderRateBadge();
+    }
+  } catch (e) {
+    console.warn('[app.js] 금리 배지 렌더 실패:', e);
+  }
 };
 
-/** 로딩 오버레이 표시/숨김 */
-// _showLoading: common.js 에 정의됨
+/** 로딩 오버레이 표시/숨김
+ *  ★ v2026.07-FIX: common.js 의존성 제거 → 여기에 직접 정의
+ *     common.js 가 로드되지 않아도 작동 보장
+ */
+function _showLoading(show) {
+  const overlay = document.getElementById('loadingOverlay');
+  if (!overlay) return;
+  overlay.style.display = show ? 'flex' : 'none';
+  if (show) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
 
 // ─── 하드 새로고침 ────────────────────────────────────────────────────────────
 // ── 단계 카드 활성/완료 헬퍼 ────────────────────────────────────────────────
