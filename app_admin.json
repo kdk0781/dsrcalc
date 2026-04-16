@@ -2,7 +2,7 @@
   "id": "/dsrcalc/admin",
   "name": "DSR 관리자 시스템",
   "short_name": "DSR 관리자",
-  "start_url": "admin.html?app=admin",
+  "start_url": "./admin.html?app=admin",
   "scope": "/dsrcalc/",
   "display": "standalone",
   "orientation": "portrait",
