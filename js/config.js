@@ -52,7 +52,7 @@ const APP_CONFIG = {
 
   // ── 리포트 링크 설정 ────────────────────────────────────────────────────
   REPORT_LINK_EXPIRY_DAYS: 7,   // 리포트 링크 유효일 수
-  REPORT_COPY_DAILY_LIMIT: 100,  // 하루 발급 한도 ← 숫자만 변경
+  REPORT_COPY_DAILY_LIMIT: 10,  // 하루 발급 한도 ← 숫자만 변경
   REPORT_PAGE_PATH: 'report.html',
   SHORTENER_API: 'https://is.gd/create.php?format=simple&url=',
 
